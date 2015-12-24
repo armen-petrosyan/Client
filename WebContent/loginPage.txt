@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="js/jquerysession.js"></script>
+
+<!--<script src="js/drop.js"></script>-->
+
+<title>Social Sky Login Page</title>
+
+<!-- Bootstrap core CSS -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="signin.css" rel="stylesheet">
+</head>
+
+<body>
+
+	<div class="container" style="width: 500">
+
+		<form class="form-signin" method="post" action="">
+			<h2 class="form-signin-heading">Please sign in</h2>
+			<label for="inputLogin" class="sr-only">Login</label> <input
+				type="login" id="inputLogin" class="form-control"
+				placeholder="Login" required autofocus> <label
+				for="inputPassword" class="sr-only">Password</label> <input
+				type="password" id="inputPassword" class="form-control"
+				placeholder="Password" required>
+			
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign
+				in</button>
+				<p id="res" style="color:red;"></p>
+		</form>
+	</div>
+
+	<script>
+		// Attach a submit handler to the form
+		$("form").submit(function(event) {
+
+			// Stop form from submitting normally
+			event.preventDefault();
+
+			// Get some values from elements on the page:
+			var $form = $(this);
+			var term = $form.find("#inputLogin").val();
+			var pass = $form.find("#inputPassword").val();
+			var myObject = new Object();
+			myObject.login = term;
+			myObject.password = pass;
+
+			$.ajax({
+				type : 'POST',
+				contentType : "application/json",
+				url : 'http://localhost:9080/loginPage',
+				data : JSON.stringify(myObject),
+				dataType : 'json',
+				success : function(data) {
+					$.session.set("token", data.token);
+					$('#res').text('ok');
+					console.log(data);
+					wait = false;
+					$(location).attr('href','http://localhost:8080/DropClient/index.html');
+				},
+				error : function(data) {
+					$.session.set("token", "");
+					$('#res').text('Your credentials is not appropriate');
+					console.log(data);
+					wait = false;
+				}
+			});
+		});
+	</script>
+
+</body>
+</html>

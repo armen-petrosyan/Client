@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="js/jquerysession.js"></script>
+
+<title>Social Sky Message Service</title>
+
+<!-- Bootstrap core CSS -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="signin.css" rel="stylesheet">
+</head>
+
+<body>
+
+	<div class="container" style="width: 500">
+
+		<form class="form-signin" method="post" action="">
+			<h2 class="form-signin-heading">Messager Service</h2>
+			<label for="inputName" class="sr-only">Input your name</label> <input
+				type="name" id="inputname" class="form-control"
+				placeholder="Input your name" required autofocus>
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Get
+				an answer</button>
+			<div class="alert alert-success" id="res" style="visibility: hidden"
+				role="alert"></div>
+			<div class="alert alert-danger" id="error" style="visibility: hidden"
+				role="alert">
+				You are not authorized. Please go to <a
+					href="http://localhost:8080/DropClient/loginPage.html">Login
+					page</a>
+			</div>
+
+		</form>
+	</div>
+	<!-- /container -->
+
+	<script>
+		// Attach a submit handler to the form
+		$("form").submit(
+				function(event) {
+
+					// Stop form from submitting normally
+					event.preventDefault();
+
+					// Get some values from elements on the page:
+					var $form = $(this);
+					var term = $form.find("#inputname").val();
+
+					$.ajax({
+						type : 'GET',
+						beforeSend : function(request) {
+							request.setRequestHeader("Authorization", "Bearer "
+									+ $.session.get('token'));
+							console.log("Bearer " + $.session.get('token'));
+						},
+						contentType : "application/json",
+						url : 'http://localhost:9080/messager/' + term,
+						dataType : 'json',
+						success : function(data) {
+							$('#res').text(data.message);
+							console.log(data).message;
+							$('#res').css('visibility', 'visible');
+							wait = false;
+						},
+						error : function(data) {
+							$('#error').css('visibility', 'visible');
+							wait = false;
+						}
+					});
+				});
+	</script>
+
+</body>
+</html>
